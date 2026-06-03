@@ -1,35 +1,45 @@
 #include "vulkan/PhysicalDevice.h"
 
-#include <cstring>
 #include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 namespace {
-const std::vector<const char*> kDeviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-};
-
-bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool checkDeviceExtensionSupport(
+    VkPhysicalDevice device,
+    const std::vector<const char*>& requiredExtensions) {
     uint32_t extensionCount = 0;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
-    std::set<std::string> requiredExtensions(kDeviceExtensions.begin(), kDeviceExtensions.end());
+    std::set<std::string> remainingExtensions(requiredExtensions.begin(), requiredExtensions.end());
     for (const auto& extension : availableExtensions) {
-        requiredExtensions.erase(extension.extensionName);
+        remainingExtensions.erase(extension.extensionName);
     }
 
-    return requiredExtensions.empty();
+    return remainingExtensions.empty();
 }
 
-bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, QueueFamilyIndices& outQueueFamilies) {
-    outQueueFamilies = findQueueFamilies(device, surface);
-    if (!outQueueFamilies.isComplete() || !checkDeviceExtensionSupport(device)) {
+bool isDeviceSuitable(
+    VkPhysicalDevice device,
+    VkSurfaceKHR surface,
+    const std::vector<const char*>& requiredExtensions,
+    bool requiresPresent,
+    QueueFamilyIndices& outQueueFamilies) {
+    outQueueFamilies = findQueueFamilies(device, surface, requiresPresent);
+    if (!outQueueFamilies.isComplete(requiresPresent)) {
         return false;
+    }
+
+    if (!checkDeviceExtensionSupport(device, requiredExtensions)) {
+        return false;
+    }
+
+    if (!requiresPresent) {
+        return true;
     }
 
     const auto swapchainSupport = querySwapchainSupport(device, surface);
@@ -37,7 +47,11 @@ bool isDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, QueueFamily
 }
 }  // namespace
 
-PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surface) {
+PhysicalDevice::PhysicalDevice(
+    VkInstance instance,
+    VkSurfaceKHR surface,
+    const std::vector<const char*>& requiredExtensions,
+    bool requiresPresent) {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
@@ -50,7 +64,7 @@ PhysicalDevice::PhysicalDevice(VkInstance instance, VkSurfaceKHR surface) {
 
     for (const auto& candidate : devices) {
         QueueFamilyIndices candidateQueues;
-        if (isDeviceSuitable(candidate, surface, candidateQueues)) {
+        if (isDeviceSuitable(candidate, surface, requiredExtensions, requiresPresent, candidateQueues)) {
             device_ = candidate;
             queueFamilies_ = candidateQueues;
             break;

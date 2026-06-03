@@ -2,7 +2,7 @@
 
 #include "experiments/Experiment.h"
 
-class SwapchainExperiment final : public Experiment {
+class ComputeProbeExperiment final : public Experiment {
 public:
     std::string name() const override;
     ExperimentRequirements requirements() const override;

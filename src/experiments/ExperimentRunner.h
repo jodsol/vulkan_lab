@@ -11,6 +11,7 @@ public:
     explicit ExperimentRunner(std::vector<std::unique_ptr<Experiment>> experiments);
 
     void run(const std::string& experimentName);
+    std::vector<std::string> experimentNames() const;
 
 private:
     std::vector<std::unique_ptr<Experiment>> experiments_;

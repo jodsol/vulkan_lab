@@ -8,7 +8,7 @@
 
 class VulkanInstance {
 public:
-    explicit VulkanInstance(const char* applicationName);
+    VulkanInstance(const char* applicationName, std::vector<const char*> requiredExtensions);
     ~VulkanInstance();
 
     VulkanInstance(const VulkanInstance&) = delete;

@@ -1,9 +1,8 @@
 #include "vulkan/VulkanInstance.h"
 
-#include <GLFW/glfw3.h>
-
 #include <cstring>
 #include <stdexcept>
+#include <utility>
 
 namespace {
 const std::vector<const char*> kValidationLayers = {
@@ -41,16 +40,7 @@ bool checkValidationLayerSupport() {
     return true;
 }
 
-std::vector<const char*> getRequiredExtensions() {
-    uint32_t glfwExtensionCount = 0;
-    const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-    if (glfwExtensions == nullptr || glfwExtensionCount == 0) {
-        throw std::runtime_error("GLFW could not provide Vulkan instance extensions.");
-    }
-
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
+std::vector<const char*> finalizeRequiredExtensions(std::vector<const char*> extensions) {
     if (kEnableValidationLayers) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
@@ -59,7 +49,7 @@ std::vector<const char*> getRequiredExtensions() {
 }
 }  // namespace
 
-VulkanInstance::VulkanInstance(const char* applicationName) {
+VulkanInstance::VulkanInstance(const char* applicationName, std::vector<const char*> requiredExtensions) {
     if (kEnableValidationLayers && !checkValidationLayerSupport()) {
         throw std::runtime_error("Validation layers requested, but not available.");
     }
@@ -72,7 +62,7 @@ VulkanInstance::VulkanInstance(const char* applicationName) {
     appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0);
     appInfo.apiVersion = VK_API_VERSION_1_2;
 
-    const auto extensions = getRequiredExtensions();
+    const auto extensions = finalizeRequiredExtensions(std::move(requiredExtensions));
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

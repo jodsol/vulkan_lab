@@ -4,18 +4,18 @@
 #include <stdexcept>
 #include <vector>
 
-namespace {
-const std::vector<const char*> kDeviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-};
-}  // namespace
-
-LogicalDevice::LogicalDevice(const PhysicalDevice& physicalDevice) {
+LogicalDevice::LogicalDevice(
+    const PhysicalDevice& physicalDevice,
+    const std::vector<const char*>& requiredExtensions) {
     const QueueFamilyIndices& indices = physicalDevice.queueFamilies();
-    const std::set<uint32_t> uniqueQueueFamilies = {
+    std::set<uint32_t> uniqueQueueFamilies = {
         indices.graphicsFamily.value(),
-        indices.presentFamily.value(),
+        indices.computeFamily.value(),
     };
+
+    if (indices.presentFamily.has_value()) {
+        uniqueQueueFamilies.insert(indices.presentFamily.value());
+    }
 
     constexpr float queuePriority = 1.0F;
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -35,15 +35,19 @@ LogicalDevice::LogicalDevice(const PhysicalDevice& physicalDevice) {
     createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
     createInfo.pEnabledFeatures = &deviceFeatures;
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(kDeviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = kDeviceExtensions.data();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
+    createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
     if (vkCreateDevice(physicalDevice.handle(), &createInfo, nullptr, &device_) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create logical device.");
     }
 
     vkGetDeviceQueue(device_, indices.graphicsFamily.value(), 0, &graphicsQueue_);
-    vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
+    vkGetDeviceQueue(device_, indices.computeFamily.value(), 0, &computeQueue_);
+
+    if (indices.presentFamily.has_value()) {
+        vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
+    }
 }
 
 LogicalDevice::~LogicalDevice() {
@@ -62,4 +66,8 @@ VkQueue LogicalDevice::graphicsQueue() const {
 
 VkQueue LogicalDevice::presentQueue() const {
     return presentQueue_;
+}
+
+VkQueue LogicalDevice::computeQueue() const {
+    return computeQueue_;
 }

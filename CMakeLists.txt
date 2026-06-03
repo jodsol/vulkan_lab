@@ -32,8 +32,10 @@ endif()
 
 add_executable(VulkanEngine
     main.cpp
+    src/experiments/ComputeProbeExperiment.cpp
     src/experiments/ExperimentRunner.cpp
     src/experiments/SwapchainExperiment.cpp
+    src/vulkan/CommandPool.cpp
     src/vulkan/DebugMessenger.cpp
     src/vulkan/GraphicsPipeline.cpp
     src/vulkan/LogicalDevice.cpp
@@ -42,6 +44,7 @@ add_executable(VulkanEngine
     src/vulkan/RenderPass.cpp
     src/vulkan/Swapchain.cpp
     src/vulkan/SwapchainSupport.cpp
+    src/vulkan/VulkanContext.cpp
     src/vulkan/VulkanInstance.cpp
     src/vulkan/VulkanSurface.cpp
     src/vulkan/VulkanWindow.cpp

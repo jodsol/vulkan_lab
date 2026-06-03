@@ -1,12 +1,6 @@
 #include "experiments/SwapchainExperiment.h"
 
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
-#include "vulkan/RenderPass.h"
-#include "vulkan/Swapchain.h"
-#include "vulkan/VulkanSurface.h"
-#include "vulkan/VulkanInstance.h"
-#include "vulkan/VulkanWindow.h"
+#include "vulkan/VulkanContext.h"
 
 #include <GLFW/glfw3.h>
 
@@ -14,19 +8,24 @@ std::string SwapchainExperiment::name() const {
     return "swapchain";
 }
 
-void SwapchainExperiment::run() {
-    VulkanWindow window(1280, 720, "Vulkan Experiment: Swapchain");
-    VulkanInstance instance("Vulkan Experiments");
-    VulkanSurface surface(instance.handle(), window);
+ExperimentRequirements SwapchainExperiment::requirements() const {
+    ExperimentRequirements requirements;
+    requirements.requiresWindow = true;
+    requirements.requiresSwapchain = true;
+    requirements.windowTitle = "Vulkan Experiment: Swapchain";
+    return requirements;
+}
 
-    PhysicalDevice physicalDevice(instance.handle(), surface.handle());
-    LogicalDevice logicalDevice(physicalDevice);
-    Swapchain swapchain(window, physicalDevice, logicalDevice, surface.handle());
-    RenderPass renderPass(logicalDevice.handle(), swapchain.imageFormat());
+void SwapchainExperiment::setup(VulkanContext& context) {
+    context.createGraphicsResources();
+}
 
-    while (!window.shouldClose()) {
+void SwapchainExperiment::run(VulkanContext& context) {
+    while (!context.window().shouldClose()) {
         glfwPollEvents();
     }
+}
 
-    vkDeviceWaitIdle(logicalDevice.handle());
+void SwapchainExperiment::teardown(VulkanContext& context) {
+    context.waitIdle();
 }

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface) {
+QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface, bool requiresPresent) {
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount = 0;
@@ -16,13 +16,19 @@ QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surfa
             indices.graphicsFamily = i;
         }
 
-        VkBool32 presentSupport = VK_FALSE;
-        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
-        if (presentSupport == VK_TRUE) {
-            indices.presentFamily = i;
+        if ((queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) != 0) {
+            indices.computeFamily = i;
         }
 
-        if (indices.isComplete()) {
+        if (requiresPresent) {
+            VkBool32 presentSupport = VK_FALSE;
+            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+            if (presentSupport == VK_TRUE) {
+                indices.presentFamily = i;
+            }
+        }
+
+        if (indices.isComplete(requiresPresent)) {
             break;
         }
     }
