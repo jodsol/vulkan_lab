@@ -31,9 +31,9 @@ This makes it easier to add new experiments without rebuilding the whole applica
 
 - [main.cpp](C:/git/vulkan/main.cpp:1)
   selects and runs an experiment
-- [Experiment.h](C:/git/vulkan/src/experiments/Experiment.h:1)
+- [Experiment.h](C:/git/vulkan/src/experiments/core/Experiment.h:1)
   defines the experiment lifecycle
-- [ExperimentRunner.cpp](C:/git/vulkan/src/experiments/ExperimentRunner.cpp:1)
+- [ExperimentRunner.cpp](C:/git/vulkan/src/experiments/core/ExperimentRunner.cpp:1)
   creates a `VulkanContext` and executes one experiment
 - [VulkanContext.h](C:/git/vulkan/src/vulkan/VulkanContext.h:1)
   owns shared Vulkan state used by experiments
@@ -80,6 +80,17 @@ Instead, it verifies that the project can create a Vulkan context suitable for c
 Its purpose is not benchmarking yet.
 Its purpose is to prove that the framework can support non-windowed experiments too.
 
+### `compute-latency`
+
+This is a headless compute experiment meant for latency-hiding investigation and RenderDoc comparison.
+
+It records two compute dispatches in one run:
+
+- a pointer-chasing style `High Latency Dispatch`
+- a more occupancy-oriented `High Occupancy Dispatch`
+
+It also writes GPU timestamps around both dispatches so the console can print rough timing numbers after execution.
+
 ## What Should Happen When Build And Run Succeeds
 
 The expected result depends on which experiment you run.
@@ -118,6 +129,17 @@ The exact queue family numbers may differ by GPU and driver.
 
 This experiment should finish without opening a window.
 
+### When running `compute-latency`
+
+You should see console output that:
+
+- announces the RenderDoc comparison target is ready
+- names the two dispatches
+- prints GPU timing results
+- prints a few output sample values
+
+This experiment should also finish without opening a window.
+
 ## Why The `swapchain` Window Looks Blank
 
 The project already creates enough Vulkan objects to support future graphics experiments, but it does not yet perform the full rendering loop.
@@ -143,6 +165,7 @@ Examples:
 VulkanEngine.exe --list
 VulkanEngine.exe swapchain
 VulkanEngine.exe compute-probe
+VulkanEngine.exe compute-latency
 ```
 
 `--list` should print the available experiment names.

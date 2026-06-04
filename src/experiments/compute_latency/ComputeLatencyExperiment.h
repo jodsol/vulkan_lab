@@ -1,8 +1,8 @@
 #pragma once
 
-#include "experiments/Experiment.h"
+#include "experiments/core/Experiment.h"
 
-class ComputeProbeExperiment final : public Experiment {
+class ComputeLatencyExperiment final : public Experiment {
 public:
     std::string name() const override;
     ExperimentRequirements requirements() const override;

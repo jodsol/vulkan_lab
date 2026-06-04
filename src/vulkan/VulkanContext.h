@@ -1,6 +1,6 @@
 #pragma once
 
-#include "experiments/Experiment.h"
+#include "experiments/core/Experiment.h"
 #include "vulkan/CommandPool.h"
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"

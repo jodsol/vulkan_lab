@@ -1,0 +1,48 @@
+#version 450
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(push_constant) uniform PushConstants {
+    uint elementCount;
+    uint iterationCount;
+} pushConstants;
+
+layout(binding = 0) readonly buffer IndexBuffer {
+    uint nextIndex[];
+} indexBuffer;
+
+layout(binding = 1) readonly buffer ValueBuffer {
+    uint values[];
+} valueBuffer;
+
+layout(binding = 2) writeonly buffer OutputBuffer {
+    uint outputData[];
+} outputBuffer;
+
+shared uint scratch[256];
+
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    uint lid = gl_LocalInvocationID.x;
+    uint cursor = indexBuffer.nextIndex[(gid + lid) % pushConstants.elementCount];
+    uint accum = valueBuffer.values[cursor];
+
+    for (uint i = 0; i < pushConstants.iterationCount; ++i) {
+        uint valueIndex = (gid + i * 256u + lid) % pushConstants.elementCount;
+        accum = accum * 1664525u + 1013904223u;
+        accum ^= valueBuffer.values[valueIndex];
+    }
+
+    scratch[lid] = accum;
+    barrier();
+
+    for (uint offset = 128u; offset > 0u; offset >>= 1u) {
+        if (lid < offset) {
+            scratch[lid] ^= scratch[lid + offset];
+        }
+
+        barrier();
+    }
+
+    outputBuffer.outputData[gid] = scratch[0] ^ accum;
+}

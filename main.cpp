@@ -1,6 +1,7 @@
-#include "experiments/ExperimentRunner.h"
-#include "experiments/ComputeProbeExperiment.h"
-#include "experiments/SwapchainExperiment.h"
+#include "experiments/core/ExperimentRunner.h"
+#include "experiments/compute_probe/ComputeProbeExperiment.h"
+#include "experiments/compute_latency/ComputeLatencyExperiment.h"
+#include "experiments/swapchain/SwapchainExperiment.h"
 
 #include <cstdlib>
 #include <exception>
@@ -13,6 +14,7 @@
 int main(int argc, char** argv) {
     try {
         std::vector<std::unique_ptr<Experiment>> experiments;
+        experiments.push_back(std::make_unique<ComputeLatencyExperiment>());
         experiments.push_back(std::make_unique<ComputeProbeExperiment>());
         experiments.push_back(std::make_unique<SwapchainExperiment>());
 

@@ -25,8 +25,8 @@ The project is centered around three ideas:
 Important files:
 
 - [main.cpp](C:/git/vulkan/main.cpp:1)
-- [Experiment.h](C:/git/vulkan/src/experiments/Experiment.h:1)
-- [ExperimentRunner.cpp](C:/git/vulkan/src/experiments/ExperimentRunner.cpp:1)
+- [Experiment.h](C:/git/vulkan/src/experiments/core/Experiment.h:1)
+- [ExperimentRunner.cpp](C:/git/vulkan/src/experiments/core/ExperimentRunner.cpp:1)
 - [VulkanContext.h](C:/git/vulkan/src/vulkan/VulkanContext.h:1)
 
 More detailed notes are in [project-overview.md](C:/git/vulkan/docs/project-overview.md:1).
@@ -67,6 +67,21 @@ Expected result:
 - console output prints queue family information
 - the process exits normally
 
+### `compute-latency`
+
+A headless compute experiment designed for RenderDoc capture and basic GPU timestamp comparison.
+
+It records two dispatches in one command buffer:
+
+- `High Latency Dispatch`
+- `High Occupancy Dispatch`
+
+Expected result:
+
+- no window opens
+- console output prints GPU timing results and output samples
+- RenderDoc shows two labeled compute dispatches that can be compared side by side
+
 ## Running Experiments
 
 Examples:
@@ -75,6 +90,7 @@ Examples:
 VulkanEngine.exe --list
 VulkanEngine.exe swapchain
 VulkanEngine.exe compute-probe
+VulkanEngine.exe compute-latency
 ```
 
 `--list` prints the available experiment names.

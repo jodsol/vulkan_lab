@@ -1,6 +1,6 @@
 #pragma once
 
-#include "experiments/Experiment.h"
+#include "experiments/core/Experiment.h"
 
 #include <memory>
 #include <string>

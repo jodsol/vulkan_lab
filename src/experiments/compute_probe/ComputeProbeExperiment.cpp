@@ -1,4 +1,4 @@
-#include "experiments/ComputeProbeExperiment.h"
+#include "experiments/compute_probe/ComputeProbeExperiment.h"
 
 #include "vulkan/VulkanContext.h"
 
