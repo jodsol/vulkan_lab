@@ -1,0 +1,32 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X
+#define LOCAL_SIZE_X 256
+#endif
+
+layout(local_size_x = LOCAL_SIZE_X, local_size_y = 1, local_size_z = 1) in;
+
+layout(push_constant) uniform PushConstants {
+    uint elementCount;
+    uint iterationCount;
+} pushConstants;
+
+layout(binding = 0) readonly buffer InputBuffer {
+    float inputData[];
+} inputBuffer;
+
+layout(binding = 1) writeonly buffer OutputBuffer {
+    float outputData[];
+} outputBuffer;
+
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    float x = inputBuffer.inputData[gid];
+
+    for (uint i = 0; i < pushConstants.iterationCount; ++i) {
+        x = x * 1.00031 + 0.00017;
+        x = x * 0.99991 + float(i & 7u) * 0.00001;
+    }
+
+    outputBuffer.outputData[gid] = x;
+}

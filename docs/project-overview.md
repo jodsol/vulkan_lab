@@ -91,6 +91,17 @@ It records two compute dispatches in one run:
 
 It also writes GPU timestamps around both dispatches so the console can print rough timing numbers after execution.
 
+### `register-pressure`
+
+This is a headless compute experiment for validating the relationship between register pressure, workgroup size, and GPU execution time.
+
+It runs a matrix of:
+
+- pressure levels: `low`, `medium`, `high`
+- local sizes: `32`, `64`, `128`, `256`
+
+The console output is formatted as a markdown table so the result can be copied into notes or a blog post.
+
 ## What Should Happen When Build And Run Succeeds
 
 The expected result depends on which experiment you run.
@@ -140,6 +151,16 @@ You should see console output that:
 
 This experiment should also finish without opening a window.
 
+### When running `register-pressure`
+
+You should see console output that:
+
+- prints the experiment title
+- lists element count and iteration count
+- prints a timing table for every pressure/local-size pair
+- prints a small output sample
+- reminds you to use Nsight Compute for register count and occupancy
+
 ## Why The `swapchain` Window Looks Blank
 
 The project already creates enough Vulkan objects to support future graphics experiments, but it does not yet perform the full rendering loop.
@@ -166,6 +187,7 @@ VulkanEngine.exe --list
 VulkanEngine.exe swapchain
 VulkanEngine.exe compute-probe
 VulkanEngine.exe compute-latency
+VulkanEngine.exe register-pressure
 ```
 
 `--list` should print the available experiment names.

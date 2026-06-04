@@ -1,6 +1,7 @@
 #include "experiments/core/ExperimentRunner.h"
 #include "experiments/compute_probe/ComputeProbeExperiment.h"
 #include "experiments/compute_latency/ComputeLatencyExperiment.h"
+#include "experiments/register_pressure/RegisterPressureExperiment.h"
 #include "experiments/swapchain/SwapchainExperiment.h"
 
 #include <cstdlib>
@@ -16,6 +17,7 @@ int main(int argc, char** argv) {
         std::vector<std::unique_ptr<Experiment>> experiments;
         experiments.push_back(std::make_unique<ComputeLatencyExperiment>());
         experiments.push_back(std::make_unique<ComputeProbeExperiment>());
+        experiments.push_back(std::make_unique<RegisterPressureExperiment>());
         experiments.push_back(std::make_unique<SwapchainExperiment>());
 
         ExperimentRunner runner(std::move(experiments));

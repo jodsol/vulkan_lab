@@ -1,0 +1,89 @@
+#version 450
+
+#ifndef LOCAL_SIZE_X
+#define LOCAL_SIZE_X 256
+#endif
+
+layout(local_size_x = LOCAL_SIZE_X, local_size_y = 1, local_size_z = 1) in;
+
+layout(push_constant) uniform PushConstants {
+    uint elementCount;
+    uint iterationCount;
+} pushConstants;
+
+layout(binding = 0) readonly buffer InputBuffer {
+    float inputData[];
+} inputBuffer;
+
+layout(binding = 1) writeonly buffer OutputBuffer {
+    float outputData[];
+} outputBuffer;
+
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    float base = inputBuffer.inputData[gid];
+
+    float r0 = base + 0.0;   float r1 = base + 1.0;   float r2 = base + 2.0;   float r3 = base + 3.0;
+    float r4 = base + 4.0;   float r5 = base + 5.0;   float r6 = base + 6.0;   float r7 = base + 7.0;
+    float r8 = base + 8.0;   float r9 = base + 9.0;   float r10 = base + 10.0; float r11 = base + 11.0;
+    float r12 = base + 12.0; float r13 = base + 13.0; float r14 = base + 14.0; float r15 = base + 15.0;
+    float r16 = base + 16.0; float r17 = base + 17.0; float r18 = base + 18.0; float r19 = base + 19.0;
+    float r20 = base + 20.0; float r21 = base + 21.0; float r22 = base + 22.0; float r23 = base + 23.0;
+    float r24 = base + 24.0; float r25 = base + 25.0; float r26 = base + 26.0; float r27 = base + 27.0;
+    float r28 = base + 28.0; float r29 = base + 29.0; float r30 = base + 30.0; float r31 = base + 31.0;
+    float r32 = base + 32.0; float r33 = base + 33.0; float r34 = base + 34.0; float r35 = base + 35.0;
+    float r36 = base + 36.0; float r37 = base + 37.0; float r38 = base + 38.0; float r39 = base + 39.0;
+    float r40 = base + 40.0; float r41 = base + 41.0; float r42 = base + 42.0; float r43 = base + 43.0;
+    float r44 = base + 44.0; float r45 = base + 45.0; float r46 = base + 46.0; float r47 = base + 47.0;
+    float r48 = base + 48.0; float r49 = base + 49.0; float r50 = base + 50.0; float r51 = base + 51.0;
+    float r52 = base + 52.0; float r53 = base + 53.0; float r54 = base + 54.0; float r55 = base + 55.0;
+    float r56 = base + 56.0; float r57 = base + 57.0; float r58 = base + 58.0; float r59 = base + 59.0;
+    float r60 = base + 60.0; float r61 = base + 61.0; float r62 = base + 62.0; float r63 = base + 63.0;
+
+    for (uint i = 0; i < pushConstants.iterationCount; ++i) {
+        float fi = float(i) * 0.00001;
+        r0 = r0 * 1.00001 + r32 * 0.0001 + fi;   r1 = r1 * 1.00002 + r33 * 0.0001 + fi;
+        r2 = r2 * 1.00003 + r34 * 0.0001 + fi;   r3 = r3 * 1.00004 + r35 * 0.0001 + fi;
+        r4 = r4 * 1.00005 + r36 * 0.0001 + fi;   r5 = r5 * 1.00006 + r37 * 0.0001 + fi;
+        r6 = r6 * 1.00007 + r38 * 0.0001 + fi;   r7 = r7 * 1.00008 + r39 * 0.0001 + fi;
+        r8 = r8 * 1.00009 + r40 * 0.0001 + fi;   r9 = r9 * 1.00010 + r41 * 0.0001 + fi;
+        r10 = r10 * 1.00011 + r42 * 0.0001 + fi; r11 = r11 * 1.00012 + r43 * 0.0001 + fi;
+        r12 = r12 * 1.00013 + r44 * 0.0001 + fi; r13 = r13 * 1.00014 + r45 * 0.0001 + fi;
+        r14 = r14 * 1.00015 + r46 * 0.0001 + fi; r15 = r15 * 1.00016 + r47 * 0.0001 + fi;
+        r16 = r16 * 1.00017 + r48 * 0.0001 + fi; r17 = r17 * 1.00018 + r49 * 0.0001 + fi;
+        r18 = r18 * 1.00019 + r50 * 0.0001 + fi; r19 = r19 * 1.00020 + r51 * 0.0001 + fi;
+        r20 = r20 * 1.00021 + r52 * 0.0001 + fi; r21 = r21 * 1.00022 + r53 * 0.0001 + fi;
+        r22 = r22 * 1.00023 + r54 * 0.0001 + fi; r23 = r23 * 1.00024 + r55 * 0.0001 + fi;
+        r24 = r24 * 1.00025 + r56 * 0.0001 + fi; r25 = r25 * 1.00026 + r57 * 0.0001 + fi;
+        r26 = r26 * 1.00027 + r58 * 0.0001 + fi; r27 = r27 * 1.00028 + r59 * 0.0001 + fi;
+        r28 = r28 * 1.00029 + r60 * 0.0001 + fi; r29 = r29 * 1.00030 + r61 * 0.0001 + fi;
+        r30 = r30 * 1.00031 + r62 * 0.0001 + fi; r31 = r31 * 1.00032 + r63 * 0.0001 + fi;
+
+        r32 = r32 * 0.99999 + r0 * 0.0001 - fi;  r33 = r33 * 0.99998 + r1 * 0.0001 - fi;
+        r34 = r34 * 0.99997 + r2 * 0.0001 - fi;  r35 = r35 * 0.99996 + r3 * 0.0001 - fi;
+        r36 = r36 * 0.99995 + r4 * 0.0001 - fi;  r37 = r37 * 0.99994 + r5 * 0.0001 - fi;
+        r38 = r38 * 0.99993 + r6 * 0.0001 - fi;  r39 = r39 * 0.99992 + r7 * 0.0001 - fi;
+        r40 = r40 * 0.99991 + r8 * 0.0001 - fi;  r41 = r41 * 0.99990 + r9 * 0.0001 - fi;
+        r42 = r42 * 0.99989 + r10 * 0.0001 - fi; r43 = r43 * 0.99988 + r11 * 0.0001 - fi;
+        r44 = r44 * 0.99987 + r12 * 0.0001 - fi; r45 = r45 * 0.99986 + r13 * 0.0001 - fi;
+        r46 = r46 * 0.99985 + r14 * 0.0001 - fi; r47 = r47 * 0.99984 + r15 * 0.0001 - fi;
+        r48 = r48 * 0.99983 + r16 * 0.0001 - fi; r49 = r49 * 0.99982 + r17 * 0.0001 - fi;
+        r50 = r50 * 0.99981 + r18 * 0.0001 - fi; r51 = r51 * 0.99980 + r19 * 0.0001 - fi;
+        r52 = r52 * 0.99979 + r20 * 0.0001 - fi; r53 = r53 * 0.99978 + r21 * 0.0001 - fi;
+        r54 = r54 * 0.99977 + r22 * 0.0001 - fi; r55 = r55 * 0.99976 + r23 * 0.0001 - fi;
+        r56 = r56 * 0.99975 + r24 * 0.0001 - fi; r57 = r57 * 0.99974 + r25 * 0.0001 - fi;
+        r58 = r58 * 0.99973 + r26 * 0.0001 - fi; r59 = r59 * 0.99972 + r27 * 0.0001 - fi;
+        r60 = r60 * 0.99971 + r28 * 0.0001 - fi; r61 = r61 * 0.99970 + r29 * 0.0001 - fi;
+        r62 = r62 * 0.99969 + r30 * 0.0001 - fi; r63 = r63 * 0.99968 + r31 * 0.0001 - fi;
+    }
+
+    outputBuffer.outputData[gid] =
+        r0 + r1 + r2 + r3 + r4 + r5 + r6 + r7 +
+        r8 + r9 + r10 + r11 + r12 + r13 + r14 + r15 +
+        r16 + r17 + r18 + r19 + r20 + r21 + r22 + r23 +
+        r24 + r25 + r26 + r27 + r28 + r29 + r30 + r31 +
+        r32 + r33 + r34 + r35 + r36 + r37 + r38 + r39 +
+        r40 + r41 + r42 + r43 + r44 + r45 + r46 + r47 +
+        r48 + r49 + r50 + r51 + r52 + r53 + r54 + r55 +
+        r56 + r57 + r58 + r59 + r60 + r61 + r62 + r63;
+}

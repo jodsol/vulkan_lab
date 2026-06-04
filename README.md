@@ -82,6 +82,21 @@ Expected result:
 - console output prints GPU timing results and output samples
 - RenderDoc shows two labeled compute dispatches that can be compared side by side
 
+### `register-pressure`
+
+A headless compute experiment for validating how increasing register pressure changes GPU execution time across different workgroup sizes.
+
+It sweeps:
+
+- pressure levels: `low`, `medium`, `high`
+- local sizes: `32`, `64`, `128`, `256`
+
+Expected result:
+
+- no window opens
+- console output prints a markdown-style timing table
+- the output can be paired with Nsight Compute to inspect register count and occupancy
+
 ## Running Experiments
 
 Examples:
@@ -91,6 +106,7 @@ VulkanEngine.exe --list
 VulkanEngine.exe swapchain
 VulkanEngine.exe compute-probe
 VulkanEngine.exe compute-latency
+VulkanEngine.exe register-pressure
 ```
 
 `--list` prints the available experiment names.

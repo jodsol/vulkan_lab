@@ -40,9 +40,11 @@ endif()
 
 add_executable(VulkanEngine
     main.cpp
+    src/experiments/core/ComputeSupport.cpp
     src/experiments/compute_latency/ComputeLatencyExperiment.cpp
     src/experiments/compute_probe/ComputeProbeExperiment.cpp
     src/experiments/core/ExperimentRunner.cpp
+    src/experiments/register_pressure/RegisterPressureExperiment.cpp
     src/experiments/swapchain/SwapchainExperiment.cpp
     src/vulkan/CommandPool.cpp
     src/vulkan/DebugMessenger.cpp
@@ -75,10 +77,16 @@ file(MAKE_DIRECTORY "${SHADER_OUTPUT_DIR}")
 set(COMPUTE_SHADER_SOURCES
     shaders/compute_latency/high_latency.comp
     shaders/compute_latency/high_occupancy.comp
+    shaders/register_pressure/low.comp
+    shaders/register_pressure/medium.comp
+    shaders/register_pressure/high.comp
 )
 
 set(COMPUTE_SHADER_OUTPUTS "")
-foreach(SHADER_SOURCE IN LISTS COMPUTE_SHADER_SOURCES)
+foreach(SHADER_SOURCE IN ITEMS
+    shaders/compute_latency/high_latency.comp
+    shaders/compute_latency/high_occupancy.comp
+)
     get_filename_component(SHADER_NAME "${SHADER_SOURCE}" NAME)
     set(SHADER_OUTPUT "${SHADER_OUTPUT_DIR}/${SHADER_NAME}.spv")
     list(APPEND COMPUTE_SHADER_OUTPUTS "${SHADER_OUTPUT}")
@@ -90,6 +98,29 @@ foreach(SHADER_SOURCE IN LISTS COMPUTE_SHADER_SOURCES)
         COMMENT "Compiling shader ${SHADER_NAME}"
         VERBATIM
     )
+endforeach()
+
+set(REGISTER_PRESSURE_LEVELS low medium high)
+set(REGISTER_PRESSURE_LOCAL_SIZES 32 64 128 256)
+
+foreach(PRESSURE_LEVEL IN LISTS REGISTER_PRESSURE_LEVELS)
+    foreach(LOCAL_SIZE IN LISTS REGISTER_PRESSURE_LOCAL_SIZES)
+        set(SHADER_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/shaders/register_pressure/${PRESSURE_LEVEL}.comp")
+        set(SHADER_OUTPUT "${SHADER_OUTPUT_DIR}/register_pressure_${PRESSURE_LEVEL}_${LOCAL_SIZE}.comp.spv")
+        list(APPEND COMPUTE_SHADER_OUTPUTS "${SHADER_OUTPUT}")
+
+        add_custom_command(
+            OUTPUT "${SHADER_OUTPUT}"
+            COMMAND "${GLSLC_EXECUTABLE}"
+                -fshader-stage=compute
+                -DLOCAL_SIZE_X=${LOCAL_SIZE}
+                "${SHADER_SOURCE}"
+                -o "${SHADER_OUTPUT}"
+            DEPENDS "${SHADER_SOURCE}"
+            COMMENT "Compiling register pressure shader ${PRESSURE_LEVEL} local_size=${LOCAL_SIZE}"
+            VERBATIM
+        )
+    endforeach()
 endforeach()
 
 add_custom_target(compile_shaders DEPENDS ${COMPUTE_SHADER_OUTPUTS})
