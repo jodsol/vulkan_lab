@@ -230,7 +230,7 @@ void RegisterPressureExperiment::run(VulkanContext& context) {
     const auto outputSamples = outputBuffer.readFloat(4);
 
     std::cout
-        << "RTR Chapter 3 Validation: Register Pressure vs GPU Time\n"
+        << "Register Pressure vs GPU Time\n"
         << "Element count: " << kElementCount << '\n'
         << "Iteration count: " << kIterationCount << '\n'
         << '\n'

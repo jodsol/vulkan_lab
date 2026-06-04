@@ -1,7 +1,7 @@
 {
   "cmake.useCMakePresets": "always",
-  "cmake.configurePreset": "vs2026-debug",
-  "cmake.buildPreset": "vs2026-debug",
-  "cmake.copyCompileCommands": "${workspaceFolder}/build/vs2026-debug/compile_commands.json",
+  "cmake.configurePreset": "clang-debug",
+  "cmake.buildPreset": "clang-debug",
+  "cmake.copyCompileCommands": "${workspaceFolder}/build/clang-debug/compile_commands.json",
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

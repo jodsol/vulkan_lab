@@ -14,15 +14,24 @@ find_package(glfw3 CONFIG QUIET)
 
 if(NOT glfw3_FOUND)
     if(WIN32)
-        message(FATAL_ERROR
-            "glfw3 CMake package was not found.\n"
-            "On Windows, install GLFW so that CMake can find glfw3Config.cmake,\n"
-            "or configure with a toolchain/package manager such as vcpkg."
-        )
-    endif()
+        include(FetchContent)
 
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(GLFW3 REQUIRED IMPORTED_TARGET glfw3)
+        set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+        set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+
+        FetchContent_Declare(
+            glfw
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG 3.4
+            GIT_SHALLOW TRUE
+        )
+        FetchContent_MakeAvailable(glfw)
+    else()
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(GLFW3 REQUIRED IMPORTED_TARGET glfw3)
+    endif()
 endif()
 
 set(GLFW_TARGET "")
