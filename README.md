@@ -97,6 +97,21 @@ Expected result:
 - console output prints a markdown-style timing table
 - the output can be paired with Nsight Compute to inspect register count and occupancy
 
+### `thread-divergence`
+
+A headless compute experiment for validating whether branch cost comes from the branch itself or from subgroup-internal divergence.
+
+It sweeps:
+
+- branch patterns: `no-branch`, `uniform`, `coherent`, `divergent`
+- local sizes: `32`, `64`, `128`, `256`
+
+Expected result:
+
+- no window opens
+- console output prints a markdown-style timing table
+- divergent branches are expected to be slower than uniform or subgroup-coherent branches
+
 ## Running Experiments
 
 Examples:
@@ -107,6 +122,7 @@ VulkanEngine.exe swapchain
 VulkanEngine.exe compute-probe
 VulkanEngine.exe compute-latency
 VulkanEngine.exe register-pressure
+VulkanEngine.exe thread-divergence
 ```
 
 `--list` prints the available experiment names.

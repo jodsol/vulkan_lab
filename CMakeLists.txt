@@ -55,6 +55,7 @@ add_executable(VulkanEngine
     src/experiments/core/ExperimentRunner.cpp
     src/experiments/register_pressure/RegisterPressureExperiment.cpp
     src/experiments/swapchain/SwapchainExperiment.cpp
+    src/experiments/thread_divergence/ThreadDivergenceExperiment.cpp
     src/vulkan/CommandPool.cpp
     src/vulkan/DebugMessenger.cpp
     src/vulkan/GraphicsPipeline.cpp
@@ -89,6 +90,7 @@ set(COMPUTE_SHADER_SOURCES
     shaders/register_pressure/low.comp
     shaders/register_pressure/medium.comp
     shaders/register_pressure/high.comp
+    shaders/thread_divergence/branch_patterns.comp
 )
 
 set(COMPUTE_SHADER_OUTPUTS "")
@@ -127,6 +129,40 @@ foreach(PRESSURE_LEVEL IN LISTS REGISTER_PRESSURE_LEVELS)
                 -o "${SHADER_OUTPUT}"
             DEPENDS "${SHADER_SOURCE}"
             COMMENT "Compiling register pressure shader ${PRESSURE_LEVEL} local_size=${LOCAL_SIZE}"
+            VERBATIM
+        )
+    endforeach()
+endforeach()
+
+set(THREAD_DIVERGENCE_CASES
+    no-branch:0
+    uniform:1
+    coherent:2
+    divergent:3
+)
+set(THREAD_DIVERGENCE_LOCAL_SIZES 32 64 128 256)
+
+foreach(CASE_INFO IN LISTS THREAD_DIVERGENCE_CASES)
+    string(REPLACE ":" ";" CASE_PARTS "${CASE_INFO}")
+    list(GET CASE_PARTS 0 CASE_NAME)
+    list(GET CASE_PARTS 1 BRANCH_PATTERN)
+
+    foreach(LOCAL_SIZE IN LISTS THREAD_DIVERGENCE_LOCAL_SIZES)
+        set(SHADER_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/shaders/thread_divergence/branch_patterns.comp")
+        set(SHADER_OUTPUT "${SHADER_OUTPUT_DIR}/thread_divergence_${CASE_NAME}_${LOCAL_SIZE}.comp.spv")
+        list(APPEND COMPUTE_SHADER_OUTPUTS "${SHADER_OUTPUT}")
+
+        add_custom_command(
+            OUTPUT "${SHADER_OUTPUT}"
+            COMMAND "${GLSLC_EXECUTABLE}"
+                -fshader-stage=compute
+                --target-env=vulkan1.1
+                -DLOCAL_SIZE_X=${LOCAL_SIZE}
+                -DBRANCH_PATTERN=${BRANCH_PATTERN}
+                "${SHADER_SOURCE}"
+                -o "${SHADER_OUTPUT}"
+            DEPENDS "${SHADER_SOURCE}"
+            COMMENT "Compiling thread divergence shader ${CASE_NAME} local_size=${LOCAL_SIZE}"
             VERBATIM
         )
     endforeach()

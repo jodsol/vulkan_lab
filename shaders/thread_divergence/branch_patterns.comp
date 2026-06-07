@@ -1,0 +1,88 @@
+#version 450
+#extension GL_KHR_shader_subgroup_basic : require
+
+#ifndef LOCAL_SIZE_X
+#define LOCAL_SIZE_X 256
+#endif
+
+#ifndef BRANCH_PATTERN
+#define BRANCH_PATTERN 0
+#endif
+
+layout(local_size_x = LOCAL_SIZE_X, local_size_y = 1, local_size_z = 1) in;
+
+layout(push_constant) uniform PushConstants {
+    uint elementCount;
+    uint iterationCount;
+    uint mode;
+} pushConstants;
+
+layout(binding = 0) readonly buffer InputBuffer {
+    float inputData[];
+} inputBuffer;
+
+layout(binding = 1) writeonly buffer OutputBuffer {
+    float outputData[];
+} outputBuffer;
+
+float heavyA(float x, uint iterations) {
+    float a = x + 0.13;
+    float b = x * 0.73 + 1.0;
+
+    for (uint i = 0; i < iterations; ++i) {
+        float fi = float(i & 31u) * 0.00017;
+        a = a * 1.00019 + b * 0.00031 + fi;
+        b = b * 0.99983 + a * 0.00023 - fi;
+    }
+
+    return a + b;
+}
+
+float heavyB(float x, uint iterations) {
+    float a = x * 1.17 + 0.37;
+    float b = x + 2.0;
+
+    for (uint i = 0; i < iterations; ++i) {
+        float fi = float((i + 7u) & 31u) * 0.00013;
+        a = a * 0.99979 + b * 0.00029 + fi;
+        b = b * 1.00021 + a * 0.00019 - fi;
+    }
+
+    return a + b;
+}
+
+void main() {
+    uint gid = gl_GlobalInvocationID.x;
+    if (gid >= pushConstants.elementCount) {
+        return;
+    }
+
+    float x = inputBuffer.inputData[gid];
+    float result = 0.0;
+
+#if BRANCH_PATTERN == 0
+    result = heavyA(x, pushConstants.iterationCount);
+#elif BRANCH_PATTERN == 1
+    if (pushConstants.mode == 0u) {
+        result = heavyA(x, pushConstants.iterationCount);
+    } else {
+        result = heavyB(x, pushConstants.iterationCount);
+    }
+#elif BRANCH_PATTERN == 2
+    if ((gl_SubgroupID & 1u) == 0u) {
+        result = heavyA(x, pushConstants.iterationCount);
+    } else {
+        result = heavyB(x, pushConstants.iterationCount);
+    }
+#elif BRANCH_PATTERN == 3
+    if ((gl_SubgroupInvocationID & 1u) == 0u) {
+        result = heavyA(x, pushConstants.iterationCount);
+    } else {
+        result = heavyB(x, pushConstants.iterationCount);
+    }
+#else
+    result = heavyA(x, pushConstants.iterationCount);
+#endif
+
+    outputBuffer.outputData[gid] = result;
+}

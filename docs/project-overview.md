@@ -102,6 +102,17 @@ It runs a matrix of:
 
 The console output is formatted as a markdown table so the result can be copied into notes or a blog post.
 
+### `thread-divergence`
+
+This is a headless compute experiment for validating whether GPU branch cost comes from the branch itself or from subgroup-internal divergence.
+
+It runs a matrix of:
+
+- branch patterns: `no-branch`, `uniform`, `coherent`, `divergent`
+- local sizes: `32`, `64`, `128`, `256`
+
+The console output is formatted as a markdown table so the result can be copied into notes or a blog post.
+
 ## What Should Happen When Build And Run Succeeds
 
 The expected result depends on which experiment you run.
@@ -160,6 +171,16 @@ You should see console output that:
 - prints a timing table for every pressure/local-size pair
 - prints a small output sample
 - reminds you to use Nsight Compute for register count and occupancy
+
+### When running `thread-divergence`
+
+You should see console output that:
+
+- prints the experiment title
+- lists element count and iteration count
+- prints a timing table for every branch-pattern/local-size pair
+- prints a small output sample
+- shows whether subgroup-internal divergence is slower than uniform or coherent branches
 
 ## Why The `swapchain` Window Looks Blank
 

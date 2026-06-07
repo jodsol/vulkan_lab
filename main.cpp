@@ -3,6 +3,7 @@
 #include "experiments/compute_latency/ComputeLatencyExperiment.h"
 #include "experiments/register_pressure/RegisterPressureExperiment.h"
 #include "experiments/swapchain/SwapchainExperiment.h"
+#include "experiments/thread_divergence/ThreadDivergenceExperiment.h"
 
 #include <cstdlib>
 #include <exception>
@@ -19,6 +20,7 @@ int main(int argc, char** argv) {
         experiments.push_back(std::make_unique<ComputeProbeExperiment>());
         experiments.push_back(std::make_unique<RegisterPressureExperiment>());
         experiments.push_back(std::make_unique<SwapchainExperiment>());
+        experiments.push_back(std::make_unique<ThreadDivergenceExperiment>());
 
         ExperimentRunner runner(std::move(experiments));
         if (argc > 1 && std::string(argv[1]) == "--list") {
